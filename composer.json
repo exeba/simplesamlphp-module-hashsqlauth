@@ -22,7 +22,7 @@
     },
     "autoload": {
         "psr-4": {
-            "SimpleSAML\\Module\\sqlauth\\": "lib/"
+            "SimpleSAML\\Module\\hashsqlauth\\": "lib/"
         }
     },
     "autoload-dev": {
