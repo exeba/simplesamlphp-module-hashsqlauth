@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SimpleSAML\Module\sqlauth\Auth\Source;
+namespace SimpleSAML\Module\hashsqlauth\Auth\Source;
 
 use Exception;
 use PDO;
@@ -26,25 +26,25 @@ class SQL extends \SimpleSAML\Module\core\Auth\UserPassBase
      * The DSN we should connect to.
      * @var string
      */
-    private string $dsn;
+    private $dsn;
 
     /**
      * The username we should connect to the database with.
      * @var string
      */
-    private string $username;
+    private $username;
 
     /**
      * The password we should connect to the database with.
      * @var string
      */
-    private string $password;
+    private $password;
 
     /**
      * The options that we should connect to the database with.
      * @var array
      */
-    private array $options = [];
+    private $options;
 
     /**
      * The query we should use to retrieve the attributes for the user.
@@ -52,7 +52,15 @@ class SQL extends \SimpleSAML\Module\core\Auth\UserPassBase
      * The username and password will be available as :username and :password.
      * @var string
      */
-    private string $query;
+    private $query;
+
+    /**
+     * When 'true', the password field will be treated like an HASH and validated
+     * via password_verify()
+     *
+     * @var boolean
+     */
+    private $usePasswordVerify;
 
     /**
      * Constructor for this authentication source.
@@ -86,6 +94,11 @@ class SQL extends \SimpleSAML\Module\core\Auth\UserPassBase
         $this->query = $config['query'];
         if (isset($config['options'])) {
             $this->options = $config['options'];
+        }
+        if (isset($config['use_password_verify'])) {
+            $this->usePasswordVerify = $config['use_password_verify'];
+        } else {
+            $this->usePasswordVerify = true;
         }
     }
 
@@ -138,19 +151,19 @@ class SQL extends \SimpleSAML\Module\core\Auth\UserPassBase
      * @param string $password  The password the user wrote.
      * @return array  Associative array with the users attributes.
      */
-    protected function login(string $username, string $password): array
+    protected function login($username, $password)
     {
         $db = $this->connect();
 
         try {
             $sth = $db->prepare($this->query);
         } catch (PDOException $e) {
-            throw new Exception('sqlauth:' . $this->authId .
+            throw new Exception('hashsqlauth:' . $this->authId .
                 ': - Failed to prepare query: ' . $e->getMessage());
         }
 
         try {
-            $sth->execute(['username' => $username, 'password' => $password]);
+            $sth->execute($this->getQueryParameters($username, $password));
         } catch (PDOException $e) {
             throw new Exception('sqlauth:' . $this->authId .
                 ': - Failed to execute query: ' . $e->getMessage());
@@ -159,7 +172,7 @@ class SQL extends \SimpleSAML\Module\core\Auth\UserPassBase
         try {
             $data = $sth->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            throw new Exception('sqlauth:' . $this->authId .
+            throw new Exception('hashsqlauth:' . $this->authId .
                 ': - Failed to fetch result set: ' . $e->getMessage());
         }
 
@@ -168,10 +181,12 @@ class SQL extends \SimpleSAML\Module\core\Auth\UserPassBase
 
         if (count($data) === 0) {
             // No rows returned - invalid username/password
-            Logger::error('sqlauth:' . $this->authId .
+            Logger::error('hashsqlauth:' . $this->authId .
                 ': No rows in result set. Probably wrong username/password.');
             throw new Error\Error('WRONGUSERPASS');
         }
+
+        $this->verifyPassword($password, $data[0]['password']);
 
         /* Extract attributes. We allow the resultset to consist of multiple rows. Attributes
          * which are present in more than one row will become multivalued. null values and
@@ -199,8 +214,31 @@ class SQL extends \SimpleSAML\Module\core\Auth\UserPassBase
             }
         }
 
-        Logger::info('sqlauth:' . $this->authId . ': Attributes: ' . implode(',', array_keys($attributes)));
+        Logger::info('hashsqlauth:' . $this->authId . ': Attributes: ' . implode(',', array_keys($attributes)));
 
         return $attributes;
+    }
+
+    private function verifyPassword(string $typedPassword, string $passwordHash)
+    {
+        if(!$this->usePasswordVerify) {
+             return;
+        }
+
+        if(!password_verify($typedPassword, $passwordHash)) {
+            \SimpleSAML\Logger::error('hashsqlauth:'.$this->authId.
+                ': Hash mismatch. Probably wrong username/password.');
+            throw new \SimpleSAML\Error\Error('WRONGUSERPASS');
+        }
+    }
+
+    private function getQueryParameters($username, $password)
+    {
+        $params = [ 'username' => $username ];
+        if(!$this->usePasswordVerify) {
+	    $params['password'] = $password;
+	}
+
+        return $params;
     }
 }

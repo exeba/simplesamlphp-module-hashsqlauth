@@ -1,13 +1,17 @@
 {
-    "name": "simplesamlphp/simplesamlphp-module-sqlauth",
+    "name": "exeba/simplesamlphp-module-hashsqlauth",
     "description": "This is a authentication module for authenticating a user against a SQL database",
     "type": "simplesamlphp-module",
-    "keywords": ["simplesamlphp", "sqlauth"],
+    "keywords": ["simplesamlphp", "sqlauth", "hash"],
     "license": "LGPL-2.1-or-later",
     "authors": [
         {
             "name": "Olav Morken",
             "email": "olavmrk@gmail.com"
+        },
+        {
+            "name": "Sebastiano Degan",
+            "email": "sebdeg87@gmail.com"
         }
     ],
     "config": {
@@ -27,7 +31,7 @@
         }
     },
     "require": {
-        "php": ">=7.4 || ^8.0",
+        "php": ">=7.2",
         "simplesamlphp/assert": "^0.1.0",
         "simplesamlphp/composer-module-installer": "~1.1",
         "simplesamlphp/simplesamlphp": "dev-master"
@@ -36,7 +40,7 @@
         "simplesamlphp/simplesamlphp-test-framework": "^1.0.5"
     },
     "support": {
-        "issues": "https://github.com/simplesamlphp/simplesamlphp-module-sqlauth/issues",
-        "source": "https://github.com/simplesamlphp/simplesamlphp-module-sqlauth"
+        "issues": "https://github.com/exeba/simplesamlphp-module-hashsqlauth/issues",
+        "source": "https://github.com/exeba/simplesamlphp-module-hashsqlauth"
     }
 }

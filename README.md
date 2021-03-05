@@ -1,3 +1,4 @@
-![Build Status](https://github.com/simplesamlphp/simplesamlphp-module-sqlauth/workflows/CI/badge.svg?branch=master)
-[![Coverage Status](https://codecov.io/gh/simplesamlphp/simplesamlphp-module-sqlauth/branch/master/graph/badge.svg)](https://codecov.io/gh/simplesamlphp/simplesamlphp-module-sqlauth)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/simplesamlphp/simplesamlphp-module-sqlauth/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/simplesamlphp/simplesamlphp-module-sqlauth/?branch=master)
+Fork of [simplesamlphp-module-sqlauth](https://github.com/simplesamlphp/simplesamlphp-module-sqlauth)
+that allows to verify password using php `password_verify()` method, instead of hashing via SQL.
+
+Useful when the database does not support a specific hashing method.
