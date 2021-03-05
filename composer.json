@@ -34,7 +34,7 @@
         "php": ">=7.2",
         "simplesamlphp/assert": "^0.1.0",
         "simplesamlphp/composer-module-installer": "~1.1",
-        "simplesamlphp/simplesamlphp": "dev-master"
+        "simplesamlphp/simplesamlphp": "^1.19"
     },
     "require-dev": {
         "simplesamlphp/simplesamlphp-test-framework": "^1.0.5"
