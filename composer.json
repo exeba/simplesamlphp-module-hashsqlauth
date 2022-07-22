@@ -18,11 +18,15 @@
         "preferred-install": {
             "simplesamlphp/simplesamlphp": "source",
             "*": "dist"
+        },
+        "allow-plugins": {
+            "composer/package-versions-deprecated": true,
+            "simplesamlphp/composer-module-installer": true
         }
     },
     "autoload": {
         "psr-4": {
-            "SimpleSAML\\Module\\hashsqlauth\\": "lib/"
+            "SimpleSAML\\Module\\hashsqlauth\\": "src/"
         }
     },
     "autoload-dev": {
@@ -31,13 +35,13 @@
         }
     },
     "require": {
-        "php": ">=7.2",
+        "php": ">=7.4 || ^8.0",
+        "simplesamlphp/assert": "^0.2.13",
         "simplesamlphp/composer-module-installer": "~1.1",
         "simplesamlphp/simplesamlphp": "^1.19",
-        "webmozart/assert": "^1.4"
     },
     "require-dev": {
-        "simplesamlphp/simplesamlphp-test-framework": "^1.0.5"
+        "simplesamlphp/simplesamlphp-test-framework": "^1.2.1"
     },
     "support": {
         "issues": "https://github.com/exeba/simplesamlphp-module-hashsqlauth/issues",

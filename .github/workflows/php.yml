@@ -14,16 +14,17 @@ jobs:
       fail-fast: false
       matrix:
         operating-system: [ubuntu-latest, windows-latest]
-        php-versions: ['7.4', '8.0']
+        php-versions: ['7.4', '8.0', '8.1']
 
     steps:
       - name: Setup PHP, with composer and extensions
         uses: shivammathur/setup-php@v2 #https://github.com/shivammathur/setup-php
         with:
+          coverage: debug
+          extensions: intl, mbstring, xml
+          ini-values: error_reporting=E_ALL
           php-version: ${{ matrix.php-versions }}
-          extensions: mbstring, xml
           tools: composer:v2
-          coverage: pcov
 
       - name: Setup problem matchers for PHP
         run: echo "::add-matcher::${{ runner.tool_cache }}/php.json"
@@ -70,7 +71,7 @@ jobs:
 
       - name: Save coverage data
         if: ${{ matrix.php-versions == '7.4' && matrix.operating-system == 'ubuntu-latest' }}
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v3
         with:
             name: build-data
             path: ${{ github.workspace }}/build
@@ -185,7 +186,7 @@ jobs:
       - name: Install Composer dependencies
         run: composer install --no-progress --prefer-dist --optimize-autoloader
 
-      - uses: actions/download-artifact@v1
+      - uses: actions/download-artifact@v3
         with:
           name: build-data
           path: ${{ github.workspace }}/build
@@ -199,8 +200,14 @@ jobs:
 
       - name: Psalm
         continue-on-error: true
-        run: php vendor/bin/psalm --show-info=true
+        run: php vendor/bin/psalm --show-info=true --shepherd
 
       - name: Psalter
         continue-on-error: true
         run: php vendor/bin/psalter --issues=UnnecessaryVarAnnotation --dry-run
+
+      - name: Lint markdown files
+        uses: nosborn/github-action-markdown-cli@v3.0.1
+        with:
+          files: .
+          ignore_path: .markdownlintignore

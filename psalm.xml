@@ -2,10 +2,11 @@
 <psalm
     name="The SimpleSAMLphp sqlauth module"
     useDocblockTypes="true"
-    totallyTyped="false"
+    errorLevel="2"
+    reportMixedIssues="false"
 >
     <projectFiles>
-        <directory name="lib" />
+        <directory name="src" />
     </projectFiles>
 
     <issueHandlers>
