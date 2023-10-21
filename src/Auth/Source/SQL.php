@@ -154,7 +154,7 @@ class SQL extends \SimpleSAML\Module\core\Auth\UserPassBase
      * @param string $password  The password the user wrote.
      * @return array  Associative array with the users attributes.
      */
-    protected function login($username, $password)
+    protected function login(string $username, string $password): array
     {
         $db = $this->connect();
 
